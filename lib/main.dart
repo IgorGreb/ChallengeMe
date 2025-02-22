@@ -13,7 +13,20 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      theme: ThemeData.light(),
+      // Основна тема для всього додатка
+      theme: ThemeData(
+        scaffoldBackgroundColor: Colors.white, // Тло для всього додатку
+        appBarTheme: AppBarTheme(
+          color: Colors.white, // Колір апбару
+          elevation: 0, // Без тіні
+          titleTextStyle: TextStyle(
+            color: Colors.black,
+            fontSize: 22,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+      ),
+
       home: BlocProvider(
         create: (context) => CryptoBloc()..add(LoadCryptoList()),
         child: CryptoListPage(),

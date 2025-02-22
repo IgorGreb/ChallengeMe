@@ -8,11 +8,11 @@ class CryptoListPage extends StatefulWidget {
   const CryptoListPage({super.key});
 
   @override
-  _CryptoListPageState createState() => _CryptoListPageState();
+  CryptoListPageState createState() => CryptoListPageState();
 }
 
-class _CryptoListPageState extends State<CryptoListPage> {
-  TextEditingController _searchController = TextEditingController();
+class CryptoListPageState extends State<CryptoListPage> {
+  final TextEditingController _searchController = TextEditingController();
   List<dynamic> _filteredCryptoList = [];
   List<dynamic> _allCryptoList = [];
 
@@ -30,8 +30,16 @@ class _CryptoListPageState extends State<CryptoListPage> {
               decoration: InputDecoration(
                 labelText: 'Пошук криптовалюти',
                 prefixIcon: const Icon(Icons.search),
-                border: OutlineInputBorder(
+                enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10.0),
+                  borderSide: BorderSide(
+                      color: Colors.black, width: 1.0), // Чорний колір бордюра
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                  borderSide: BorderSide(
+                      color: Colors.black,
+                      width: 2.0), // Чорний колір бордюра при фокусі
                 ),
               ),
               onChanged: (query) {
@@ -87,6 +95,7 @@ class _CryptoListPageState extends State<CryptoListPage> {
               itemBuilder: (context, index) {
                 final crypto = _filteredCryptoList[index];
                 return Card(
+                  color: Colors.white,
                   margin: const EdgeInsets.all(8.0),
                   child: GestureDetector(
                     onTap: () {
@@ -99,12 +108,29 @@ class _CryptoListPageState extends State<CryptoListPage> {
                       );
                     },
                     child: ListTile(
-                      title: Text(crypto['name']),
+                      title: Text(
+                        crypto['name'],
+                        style: TextStyle(
+                          fontWeight: FontWeight.w500,
+                          fontSize: 18,
+                          color: Colors.black, // Чорний колір тексту
+                        ),
+                      ),
                       subtitle: Text(
                         'Ціна: \$${crypto['current_price']}',
-                        style: const TextStyle(color: Colors.green),
+                        style: const TextStyle(
+                          color: Colors.green, // Зелений для ціни
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
-                      leading: Image.network(crypto['image']),
+                      leading: ClipOval(
+                        child: Image.network(
+                          crypto['image'],
+                          width: 50,
+                          height: 50,
+                          fit: BoxFit.cover,
+                        ),
+                      ),
                     ),
                   ),
                 );
@@ -122,7 +148,14 @@ class _CryptoListPageState extends State<CryptoListPage> {
                     size: 40,
                   ),
                   const SizedBox(height: 10),
-                  const Text('Помилка при завантаженні даних'),
+                  const Text(
+                    'Помилка при завантаженні даних',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.white,
+                    ),
+                  ),
                   const SizedBox(height: 10),
                 ],
               ),
