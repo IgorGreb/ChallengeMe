@@ -1,77 +1,15 @@
+import 'package:crypto_info/bloc/crypto_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fl_chart/fl_chart.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
-
-// Bloc Events
-abstract class CryptoEvent {}
-
-class LoadCryptoList extends CryptoEvent {}
-
-class LoadCryptoDetails extends CryptoEvent {
-  final String id;
-  LoadCryptoDetails(this.id);
-}
-
-// Bloc State
-abstract class CryptoState {}
-
-class CryptoLoading extends CryptoState {}
-
-class CryptoLoaded extends CryptoState {
-  final List<dynamic> cryptoList;
-  CryptoLoaded(this.cryptoList);
-}
-
-class CryptoDetailsLoaded extends CryptoState {
-  final Map<String, dynamic> cryptoDetails;
-  CryptoDetailsLoaded(this.cryptoDetails);
-}
-
-class CryptoError extends CryptoState {}
-
-// Bloc
-class CryptoBloc extends Bloc<CryptoEvent, CryptoState> {
-  CryptoBloc() : super(CryptoLoading()) {
-    on<LoadCryptoList>(_loadCryptoList);
-    on<LoadCryptoDetails>(_loadCryptoDetails);
-  }
-
-  Future<void> _loadCryptoList(
-      LoadCryptoList event, Emitter<CryptoState> emit) async {
-    try {
-      final response = await http.get(
-        Uri.parse(
-            'https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&sparkline=true'),
-      );
-      final data = json.decode(response.body);
-      emit(CryptoLoaded(data));
-    } catch (_) {
-      emit(CryptoError());
-    }
-  }
-
-  Future<void> _loadCryptoDetails(
-      LoadCryptoDetails event, Emitter<CryptoState> emit) async {
-    try {
-      final response = await http.get(
-        Uri.parse(
-            'https://api.coingecko.com/api/v3/coins/${event.id}?localization=false&tickers=false&market_data=true&community_data=false&developer_data=false&sparkline=true'),
-      );
-      final data = json.decode(response.body);
-      emit(CryptoDetailsLoaded(data));
-    } catch (_) {
-      emit(CryptoError());
-    }
-  }
-}
 
 void main() {
   runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
@@ -86,6 +24,8 @@ class MyApp extends StatelessWidget {
 
 // Головна сторінка
 class CryptoListPage extends StatelessWidget {
+  const CryptoListPage({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
