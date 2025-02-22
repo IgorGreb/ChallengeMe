@@ -6,5 +6,6 @@ class LoadCryptoList extends CryptoEvent {}
 
 class LoadCryptoDetails extends CryptoEvent {
   final String id;
-  LoadCryptoDetails(this.id);
+
+  LoadCryptoDetails({required this.id});
 }

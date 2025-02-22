@@ -1,12 +1,12 @@
 part of 'crypto_bloc.dart';
 
-// Bloc State
+// States
 abstract class CryptoState {}
 
 class CryptoLoading extends CryptoState {}
 
 class CryptoLoaded extends CryptoState {
-  final List<dynamic> cryptoList;
+  final List<Map<String, dynamic>> cryptoList;
   CryptoLoaded(this.cryptoList);
 }
 
@@ -15,4 +15,7 @@ class CryptoDetailsLoaded extends CryptoState {
   CryptoDetailsLoaded(this.cryptoDetails);
 }
 
-class CryptoError extends CryptoState {}
+class CryptoError extends CryptoState {
+  final String errorMessage;
+  CryptoError({this.errorMessage = 'An unknown error occurred.'});
+}
