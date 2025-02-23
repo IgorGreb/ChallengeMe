@@ -1,5 +1,7 @@
+import 'dart:math';
 import 'package:fl_chart/fl_chart.dart'; // Імпорт бібліотеки для побудови графіків
 import 'package:flutter/material.dart'; // Імпорт бібліотеки для UI Flutter
+import 'package:intl/intl.dart'; // Для форматування дат
 
 // Клас сторінки деталей криптовалюти, що приймає дані про криптовалюту як параметр
 class CryptoDetailPage extends StatelessWidget {
@@ -11,6 +13,22 @@ class CryptoDetailPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Отримуємо список цін з API
+    List<double> prices = List<double>.from(crypto['sparkline_in_7d']['price']
+        .map((e) => e.toDouble())); // Перевіряємо, що тут є тільки числа
+
+    // Перевірка на кількість точок для графіка (щоб уникнути помилки)
+    int dataLength = prices.length > 7 ? 7 : prices.length;
+
+    // Поточна дата
+    DateTime now = DateTime.now();
+
+    // Генерація списку дат за останні 7 днів
+    List<String> dateLabels = List.generate(dataLength, (index) {
+      DateTime date = now.subtract(Duration(days: dataLength - index - 1));
+      return DateFormat('dd/MM').format(date); // Форматуємо дату як dd/MM
+    });
+
     return Scaffold(
       appBar: AppBar(
         title:
@@ -18,90 +36,103 @@ class CryptoDetailPage extends StatelessWidget {
       ),
       body: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.all(
-              16.0), // Відступи для зручності розташування елементів
+          padding: const EdgeInsets.all(16.0), // Відступи для зручності
           child: Column(
             children: [
-              // Герой-ефект для зображення криптовалюти, щоб анімація була плавною при переході
+              // Герой-ефект для зображення криптовалюти
               Hero(
-                tag:
-                    'crypto-${crypto['id']}', // Унікальний тег для ефекту героя
+                tag: 'crypto-${crypto['id']}',
                 child: Image.network(
                   crypto['image'], // URL зображення криптовалюти
-                  height: 200, // Задаємо висоту зображення для кращого вигляду
-                  fit: BoxFit.contain, // Підганяємо зображення по контейнеру
+                  height: 200,
+                  fit: BoxFit.contain,
                 ),
               ),
               Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Text(
-                  'Ціна: \$${crypto['current_price']}', // Відображення поточної ціни криптовалюти
+                  'Ціна: \$${crypto['current_price']}',
                   style: TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
-                    color: Colors.black, // Стиль для тексту ціни
+                    color: Colors.black,
                   ),
                 ),
               ),
-              SizedBox(height: 8), // Між елементами
+              SizedBox(height: 8),
 
               // Перевірка наявності даних для графіка (спарклайн за останні 7 днів)
               if (crypto['sparkline_in_7d'] != null &&
                   crypto['sparkline_in_7d']['price'] != null &&
                   crypto['sparkline_in_7d']['price'].isNotEmpty)
                 SizedBox(
-                  height: 300.0, // Висота графіка
+                  height: 300.0,
                   child: LineChart(
                     LineChartData(
                       lineBarsData: [
                         LineChartBarData(
                           spots: List.generate(
-                            crypto['sparkline_in_7d']['price']
-                                .length, // Генерація точок для графіка
+                            dataLength,
                             (index) => FlSpot(
-                              index.toDouble(),
-                              crypto['sparkline_in_7d']['price'][index]
-                                  .toDouble(),
+                              (index + 1).toDouble(), // Починаємо з 1
+                              prices[index],
                             ),
                           ),
-                          color: Colors.green.withOpacity(
-                              0.9), // Колір лінії графіка з прозорістю
+                          color: Colors.green.withValues(alpha: 0.7),
                           belowBarData: BarAreaData(
                             show: true,
-                            color: Colors.green
-                                .withOpacity(0.1), // Прозора зона під графіком
+                            color: Colors.green.withOpacity(0.1),
                           ),
-                          dotData: FlDotData(
-                            show: true, // Включаємо показ точок на графіку
-                          ),
-                          barWidth: 1, // Товщина лінії графіка
+                          dotData: FlDotData(show: true),
+                          barWidth: 1,
                         ),
                       ],
                       titlesData: FlTitlesData(
                         bottomTitles: AxisTitles(
                           sideTitles: SideTitles(
-                              showTitles: false), // Прибираємо цифри на осі X
-                        ),
-                        topTitles: AxisTitles(
-                          sideTitles: SideTitles(
-                              showTitles:
-                                  false), // Прибираємо цифри на верхній осі X
+                            reservedSize: 50,
+                            showTitles: true,
+                            interval: 1,
+                            getTitlesWidget: (value, meta) {
+                              // Відображення дат на осі X
+                              int index = value.toInt() -
+                                  1; // Оскільки ми починаємо з 1
+                              if (index >= 0 && index < dateLabels.length) {
+                                String date = dateLabels[index];
+                                return RotatedBox(
+                                  quarterTurns: 1,
+                                  child: Text(
+                                    date,
+                                    style: TextStyle(
+                                      fontSize: 10,
+                                    ),
+                                  ),
+                                );
+                              } else {
+                                return Container();
+                              }
+                            },
+                          ),
                         ),
                         leftTitles: AxisTitles(
+                          sideTitles: SideTitles(showTitles: false),
+                        ),
+                        rightTitles: AxisTitles(
+                          axisNameSize: 1,
                           sideTitles: SideTitles(
-                              showTitles:
-                                  false), // Прибираємо всі цифри на осі Y
+                            showTitles: true,
+                            reservedSize: 50,
+                          ),
                         ),
                       ),
                       gridData: FlGridData(
-                        show: false, // Прибираємо сітку
+                        show: false,
                       ),
                       borderData: FlBorderData(
                         show: true,
                         border: Border.all(
-                          color: Colors.grey
-                              .withOpacity(0.001), // Колір межі графіка
-                          width: 1, // Товщина межі
+                          color: Colors.grey.withValues(alpha: 0.5),
+                          width: 1,
                         ),
                       ),
                     ),
@@ -114,7 +145,7 @@ class CryptoDetailPage extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: Text(
-                    'Немає даних для графіка за останні 7 днів.', // Повідомлення, якщо дані відсутні
+                    'Немає даних для графіка за останні 7 днів.',
                     style: TextStyle(fontSize: 18, color: Colors.white),
                   ),
                 ),

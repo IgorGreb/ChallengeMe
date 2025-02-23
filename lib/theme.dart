@@ -61,7 +61,7 @@ ThemeData defaultTheme = ThemeData(
   // Налаштування карток (Card)
   cardTheme: CardTheme(
     color: CustomColors.white, // Колір карток
-    shadowColor: Colors.black.withOpacity(0.08), // Колір тіні карток
+    shadowColor: Colors.black.withValues(alpha: 0.5), // Колір тіні карток
     elevation: 4, // Глибина тіні
     shape: RoundedRectangleBorder(
       borderRadius: BorderRadius.circular(16), // Округлені кути карток

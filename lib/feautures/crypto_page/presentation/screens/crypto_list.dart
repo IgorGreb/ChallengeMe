@@ -54,15 +54,14 @@ class CryptoListPageState extends State<CryptoListPage> {
                   borderRadius: BorderRadius.circular(12.0),
                   borderSide: BorderSide(
                     color: CustomColors
-                        .grey, // Колір бордера для непотрібного фокусу
+                        .primaryColor, // Колір бордера для непотрібного фокусу
                   ),
                 ),
                 focusedBorder: OutlineInputBorder(
                   // Стиль для фокусу
                   borderRadius: BorderRadius.circular(12.0),
                   borderSide: BorderSide(
-                    color: CustomColors
-                        .primaryColor, // Колір бордера під час фокусу
+                    color: CustomColors.white, // Колір бордера під час фокусу
                     width: 2.0,
                   ),
                 ),
