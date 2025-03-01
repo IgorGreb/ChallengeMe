@@ -1,3 +1,2 @@
-# crypto_info
-
-A new Flutter project.
+ТЗ 
+Ціни на криптовалюту з графіком за 30 днів
